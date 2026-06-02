@@ -2,129 +2,207 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Lenguajes del amor</title>
+<title>Ranking Grupo K</title>
+
+<link rel="stylesheet" href="https://use.typekit.net/vsp7vcb.css">
 
 <style>
-html, body {
-  margin:0;
-  padding:0;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  font-family: Arial, sans-serif;
+
+html, body{
+    margin:0;
+    padding:0;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
 }
 
-.contenedor {
-  position: relative;
-  width:100vw;
-  height:100vh;
+.contenedor{
+    position:relative;
+    width:100vw;
+    height:100vh;
 }
 
-/* Video de fondo */
-#fondoVideo {
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  object-fit:fill;
-  z-index:0;
+/* VIDEO DE FONDO */
+
+#fondoVideo{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:fill;
+    z-index:0;
 }
 
-/* Capa UI */
-/* Barras con coordenadas */
-#barra-regalos {
-  position:absolute;
-  top: 55.5%;
-  left: 36%;
+/* CONTENIDO */
+
+#contenido{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:10;
 }
 
-#barra-actos {
-  position:absolute;
-  top: 65.5%;
-  left: 36%;
+/* EQUIPOS */
+
+.equipo{
+
+    position:absolute;
+
+    font-family:"remora-sans-w5", sans-serif;
+    font-weight:900;
+    font-style:normal;
+
+    font-size:113px;
+
+    color:#012bff;
+
+    text-transform:uppercase;
+
+    white-space:nowrap;
 }
 
-#barra-palabras {
-  position:absolute;
-  top: 75.7%;
-  left: 36%;
+/* PORCENTAJES */
+
+.porcentaje{
+
+    position:absolute;
+
+    font-family:"remora-sans-w5", sans-serif;
+    font-weight:900;
+    font-style:normal;
+
+    font-size:116px;
+
+    color:#0a2957;
+
+    white-space:nowrap;
 }
 
-#barra-tiempo {
-  position:absolute;
-  top: 85.5%;
-  left: 36%;
+/* ========================= */
+/* COORDENADAS EQUIPOS */
+/* ========================= */
+
+#p1{
+    top:53.5%;
+    left:29%;
 }
 
-#barra-contacto {
-  position:absolute;
-  top: 95.5%;
-  left: 36%;
-
+#p2{
+    top:70.1%;
+    left:29%;
 }
 
-/* Barras */
-.barra {
-  width: 1000px;
-  height: 15px;
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  margin-bottom: 40px;
+#p3{
+    top:87.3%;
+    left:29%;
 }
 
-.relleno {
-  height: 100%;
-  width: 0%;
-  background: #f93596;
-  transition: width 0.8s ease;
+#p4{
+    top:104.8%;
+    left:29%;
 }
+
+/* ========================= */
+/* COORDENADAS PORCENTAJES */
+/* ========================= */
+
+#v1{
+    top:51.5%;
+    left:71%;
+}
+
+#v2{
+    top:68.2%;
+    left:71%;
+}
+
+#v3{
+    top:85.5%;
+    left:71%;
+}
+
+#v4{
+    top:102.2%;
+    left:71%;
+}
+
 </style>
 </head>
 
 <body>
+
 <div class="contenedor">
 
-  <!-- VIDEO FONDO -->
-  <video autoplay muted loop playsinline id="fondoVideo">
-    <source src="fondo.mp4" type="video/mp4">
-  </video>
+    <video autoplay muted loop playsinline id="fondoVideo">
+        <source src="fondo.mp4" type="video/mp4">
+    </video>
 
-  <!-- UI ENCIMA -->
- <div class="ui">
-  <div class="barra" id="barra-regalos"><div id="regalos" class="relleno"></div></div>
-  <div class="barra" id="barra-actos"><div id="actos" class="relleno"></div></div>
-  <div class="barra" id="barra-palabras"><div id="palabras" class="relleno"></div></div>
-  <div class="barra" id="barra-tiempo"><div id="tiempo" class="relleno"></div></div>
-  <div class="barra" id="barra-contacto"><div id="contacto" class="relleno"></div></div>
-</div>
+    <div id="contenido">
+
+        <div id="p1" class="equipo"></div>
+        <div id="p2" class="equipo"></div>
+        <div id="p3" class="equipo"></div>
+        <div id="p4" class="equipo"></div>
+
+        <div id="v1" class="porcentaje"></div>
+        <div id="v2" class="porcentaje"></div>
+        <div id="v3" class="porcentaje"></div>
+        <div id="v4" class="porcentaje"></div>
+
+    </div>
 
 </div>
 
 <script>
-const URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLho6R0uRDMC_9GrwfI0cvD5CABU7qrzs1RiKC545_eoyN1pkXfJLX_vjLCe3DchzOHrDGhvAHfOL4kieoH6mlX_Tnvjn7LiUFng3SV6VkbxgIhCAXfoCpEIVNpLm9Sl66nhCKMijbbeAaa37jSkKxvQ3jTLeSP690-56HO1KhJe0yhxLcEzSqHUC5X7tsQ1mtz39h5Gw511VzlDAzsKX2O5WzVoGfzXfCFUIYfadkjcF0TdtDir-uYHufBr5IalcGxMOWI2ewTEW3b6rU5vw6xFYpeAqg&lib=McgJPm5HJcJ54L-8ideZcEZ-pvmjiA198";
 
-function actualizar() {
-  fetch(URL)
-    .then(r => r.json())
-    .then(data => {
+const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQe-iffkDRGCLcL9WIw_Y8I-HDwFCwarw_f5-Vr8__6vLEYLry-Gw5_GVd_1W0XQTug0cKTqc6WLxW_bx6GTEd2D9RnhkUO2KxQ2OsIFt-i-fS-hNgtVrCFH-y2657jxfNFmdMtVUgu04qPItU08rD-5CQu5oxSP9Af7dH0JXR1da2BXQpK0L8d1z3HFHJFXKzej_Q_hIAInAvVrMmpcvV3aSJ3ml9VTznhfZbQ_7_JpKCoTnM4m2PRskTuQIo0PDhkVJkmJ_datNgT-Z2VuCX78WVa0g&lib=MT1LZbfHctya4uObz9hnmzqeEHa1C_Htb";
 
-      const total = Object.values(data).reduce((a,b)=>a+b,0);
+async function cargarRanking(){
 
-      if(total === 0) return;
+    try{
 
-      document.getElementById("regalos").style.width = (data.Regalos/total*100)+"%";
-      document.getElementById("actos").style.width = (data.Actos/total*100)+"%";
-      document.getElementById("palabras").style.width = (data.Palabras/total*100)+"%";
-      document.getElementById("tiempo").style.width = (data.Tiempo/total*100)+"%";
-      document.getElementById("contacto").style.width = (data.Contacto/total*100)+"%";
-    });
+        const response = await fetch(API_URL);
+        const ranking = await response.json();
+
+        document.getElementById("p1").innerText =
+            ranking[0]?.equipo || "";
+
+        document.getElementById("p2").innerText =
+            ranking[1]?.equipo || "";
+
+        document.getElementById("p3").innerText =
+            ranking[2]?.equipo || "";
+
+        document.getElementById("p4").innerText =
+            ranking[3]?.equipo || "";
+
+        document.getElementById("v1").innerText =
+            (ranking[0]?.porcentaje ?? 0) + "%";
+
+        document.getElementById("v2").innerText =
+            (ranking[1]?.porcentaje ?? 0) + "%";
+
+        document.getElementById("v3").innerText =
+            (ranking[2]?.porcentaje ?? 0) + "%";
+
+        document.getElementById("v4").innerText =
+            (ranking[3]?.porcentaje ?? 0) + "%";
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
 }
 
-actualizar();
-setInterval(actualizar, 5000);
+cargarRanking();
+setInterval(cargarRanking,60000);
+
 </script>
+
 </body>
 </html>
-
