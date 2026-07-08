@@ -1,212 +1,209 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Ranking Grupo K</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Final-2026</title>
+        <style>
+            :root {
+                --canvas-width: 1792;
+                --canvas-height: 2050;
+                --stage-scale: 1;
+            }
 
-<link rel="stylesheet" href="https://use.typekit.net/vsp7vcb.css">
+            * {
+                box-sizing: border-box;
+            }
 
-<style>
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                overflow: hidden;
+                background: #000;
+            }
 
-html, body{
-    margin:0;
-    padding:0;
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-}
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
 
-.contenedor{
-    position:relative;
-    width:100vw;
-    height:100vh;
-}
+            .stage {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: calc(var(--canvas-width) * 1px);
+                height: calc(var(--canvas-height) * 1px);
+                overflow: hidden;
+                transform: translate(-50%, -50%) scale(var(--stage-scale));
+                transform-origin: center center;
+            }
 
-/* VIDEO DE FONDO */
+            .background-video {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
 
-#fondoVideo{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    object-fit:fill;
-    z-index:0;
-}
+            .winners {
+                position: absolute;
+                top: 40%;
+                left: 50.2%;
+                display: flex;
+                width: 822px;
+                height: 285px;
+                align-items: center;
+                justify-content: center;
+                gap: 251px;
+                transform: translate(-50%, -50%);
+            }
 
-/* CONTENIDO */
+            .winner {
+                display: flex;
+                width: 290px;
+                height: 275px;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transform: scale(0.94);
+                transition:
+                    opacity 450ms ease,
+                    transform 450ms ease;
+            }
 
-#contenido{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    z-index:10;
-}
+            .winner.is-visible {
+                opacity: 1;
+                transform: scale(1);
+            }
 
-/* EQUIPOS */
+            .winner img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                filter: drop-shadow(0 34px 42px rgba(0, 0, 0, 0.42));
+            }
+        </style>
+    </head>
+    <body>
+        <main class="stage" aria-live="polite">
+            <video class="background-video" autoplay muted loop playsinline>
+                <source src="fondo.mp4" type="video/mp4" />
+            </video>
 
-.equipo{
+            <section class="winners" aria-label="Opciones mas votadas">
+                <div class="winner" data-winner-slot="0"></div>
+                <div class="winner" data-winner-slot="1"></div>
+            </section>
+        </main>
 
-    position:absolute;
+        <script>
+            const APPS_SCRIPT_URL =
+                "https://script.google.com/macros/s/AKfycbzXWt2A7win0rxAKO6XDW9BMkRfT2PcvJdqCGdtOoSOPVUtFvfeXuqoEOWFVBeFKS3S/exec";
+            const REFRESH_INTERVAL_MS = 30000;
+            const CANVAS_WIDTH = 1792;
+            const CANVAS_HEIGHT = 2050;
 
-    font-family:"remora-sans-w5", sans-serif;
-    font-weight:900;
-    font-style:normal;
+            const svgByOption = new Map([
+                ["argentina", "Argentina.svg"],
+                ["belgica", "Bélgica.svg"],
+                ["bélgica", "Bélgica.svg"],
+                ["espana", "España.svg"],
+                ["españa", "España.svg"],
+                ["francia", "Francia.svg"],
+                ["inglaterra", "Inglaterra.svg"],
+                ["marruecos", "Marruecos.svg"],
+                ["maruecos", "Marruecos.svg"],
+                ["noruega", "Noruega.svg"],
+                ["suiza", "Suiza.svg"]
+            ]);
 
-    font-size:84px;
+            function resizeStage() {
+                const scale = Math.min(window.innerWidth / CANVAS_WIDTH, window.innerHeight / CANVAS_HEIGHT);
 
-    color:#012bff;
+                document.documentElement.style.setProperty("--stage-scale", scale);
+            }
 
-    text-transform:uppercase;
+            function normalizeOption(value) {
+                return String(value || "")
+                    .trim()
+                    .replace(/\.svg$/i, "")
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase();
+            }
 
-    white-space:nowrap;
-    transform: scaleY(0.50);
-    transform-origin:left center;
-}
+            function getSvgFileName(option) {
+                const cleanOption = String(option || "").trim();
+                const normalized = normalizeOption(cleanOption);
 
-/* PORCENTAJES */
+                if (svgByOption.has(normalized)) {
+                    return svgByOption.get(normalized);
+                }
 
-.porcentaje{
+                if (/\.svg$/i.test(cleanOption)) {
+                    return cleanOption;
+                }
 
-    position:absolute;
+                return `${cleanOption}.svg`;
+            }
 
-    font-family:"remora-sans-w5", sans-serif;
-    font-weight:900;
-    font-style:normal;
+            function renderWinners(payload) {
+                const slots = document.querySelectorAll("[data-winner-slot]");
+                const results = Array.isArray(payload && payload.results) ? payload.results.slice(0, 2) : [];
 
-    font-size:84px;
+                slots.forEach((slot, index) => {
+                    const result = results[index];
 
-    color:#0a2957;
+                    slot.classList.remove("is-visible");
+                    slot.replaceChildren();
 
-    white-space:nowrap;
-    transform: scaleY(0.50);
-    transform-origin:left center;
-}
+                    if (!result || !result.option) {
+                        return;
+                    }
 
-/* ========================= */
-/* COORDENADAS EQUIPOS */
-/* ========================= */
+                    const image = document.createElement("img");
+                    const fileName = getSvgFileName(result.option);
 
-#p1{
-    top:53.7%;
-    left:36%;
-}
+                    image.src = `SVG/${encodeURIComponent(fileName)}`;
+                    image.alt = result.option;
+                    image.onload = () => slot.classList.add("is-visible");
+                    image.onerror = () => console.warn(`No se encontro SVG para: ${result.option}`);
 
-#p2{
-    top:60.7%;
-    left:36%;
-}
+                    slot.appendChild(image);
+                });
+            }
 
-#p3{
-    top:67.5%;
-    left:36%;
-}
+            function loadResults() {
+                const callbackName = `topVotes_${Date.now()}`;
+                const script = document.createElement("script");
+                const url = new URL(APPS_SCRIPT_URL);
 
-#p4{
-    top:73.8%;
-    left:36%;
-}
+                window[callbackName] = (payload) => {
+                    renderWinners(payload);
+                    script.remove();
+                    delete window[callbackName];
+                };
 
-/* ========================= */
-/* COORDENADAS PORCENTAJES */
-/* ========================= */
+                url.searchParams.set("callback", callbackName);
+                url.searchParams.set("v", Date.now());
 
-#v1{
-    top:53.7%;
-    left:64%;
-}
+                script.src = url.toString();
+                script.onerror = () => {
+                    script.remove();
+                    delete window[callbackName];
+                };
 
-#v2{
-    top:60.7%;
-    left:64%;
-}
+                document.body.appendChild(script);
+            }
 
-#v3{
-    top:67.5%;
-    left:64%;
-}
+            resizeStage();
+            loadResults();
 
-#v4{
-    top:73.8%;
-    left:64%;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="contenedor">
-
-    <video autoplay muted loop playsinline id="fondoVideo">
-        <source src="fondo.mp4" type="video/mp4">
-    </video>
-
-    <div id="contenido">
-
-        <div id="p1" class="equipo"></div>
-        <div id="p2" class="equipo"></div>
-        <div id="p3" class="equipo"></div>
-        <div id="p4" class="equipo"></div>
-
-        <div id="v1" class="porcentaje"></div>
-        <div id="v2" class="porcentaje"></div>
-        <div id="v3" class="porcentaje"></div>
-        <div id="v4" class="porcentaje"></div>
-
-    </div>
-
-</div>
-
-<script>
-
-const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQaVTvO365cN_YzCVvGteNIh57YdOxFkt9PIhUDMu9aNh7Lge_yug1sI-k7xscq-d6wdHFzfMNKjGFLqxffsDSoDSmrIuelylKqbW4zMjb0oOy9II5Esixi2IHbrr4i-VncxGd2w0imYRQ8s1dkE8cUMA010Xga0S8EF-NUD1a7sElV2PJkJX8VjoJnNXcRK8oFARdXldp9y3_oyBTJMEvE3ql9JXVwIfdn38K9Im8Rfwcg4uXjHrYt0b7dJg9WiQD-40bPAVdOBF7JapIPJZpdKkXcVA&lib=MT1LZbfHctya4uObz9hnmzqeEHa1C_Htb";
-
-async function cargarRanking(){
-
-    try{
-
-        const response = await fetch(API_URL);
-        const ranking = await response.json();
-
-        document.getElementById("p1").innerText =
-            ranking[0]?.equipo || "";
-
-        document.getElementById("p2").innerText =
-            ranking[1]?.equipo || "";
-
-        document.getElementById("p3").innerText =
-            ranking[2]?.equipo || "";
-
-        document.getElementById("p4").innerText =
-            ranking[3]?.equipo || "";
-
-        document.getElementById("v1").innerText =
-            (ranking[0]?.porcentaje ?? 0) + "%";
-
-        document.getElementById("v2").innerText =
-            (ranking[1]?.porcentaje ?? 0) + "%";
-
-        document.getElementById("v3").innerText =
-            (ranking[2]?.porcentaje ?? 0) + "%";
-
-        document.getElementById("v4").innerText =
-            (ranking[3]?.porcentaje ?? 0) + "%";
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-cargarRanking();
-setInterval(cargarRanking,60000);
-
-</script>
-
-</body>
+            window.addEventListener("resize", resizeStage);
+            window.setInterval(loadResults, REFRESH_INTERVAL_MS);
+        </script>
+    </body>
 </html>
