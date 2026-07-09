@@ -8,6 +8,8 @@
             :root {
                 --canvas-width: 1792;
                 --canvas-height: 2050;
+                --winner-x-fix: 0.74;
+                --winner-y-fix: 1;
             }
 
             * {
@@ -76,9 +78,13 @@
 
             .winner img {
                 display: block;
-                width: 100%;
+                width: auto;
                 height: 100%;
+                max-width: 100%;
+                aspect-ratio: 1 / 1;
                 object-fit: contain;
+                transform: scaleX(var(--winner-x-fix)) scaleY(var(--winner-y-fix));
+                transform-origin: center center;
                 filter: drop-shadow(0 34px 42px rgba(0, 0, 0, 0.42));
             }
         </style>
