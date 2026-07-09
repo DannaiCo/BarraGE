@@ -8,7 +8,6 @@
             :root {
                 --canvas-width: 1792;
                 --canvas-height: 2050;
-                --stage-scale: 1;
             }
 
             * {
@@ -17,26 +16,23 @@
 
             html,
             body {
-                width: 100%;
-                height: 100%;
+                width: 100vw;
+                height: 100vh;
                 margin: 0;
                 overflow: hidden;
                 background: #000;
             }
 
             body {
+                position: relative;
                 font-family: Arial, Helvetica, sans-serif;
             }
 
             .stage {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: calc(var(--canvas-width) * 1px);
-                height: calc(var(--canvas-height) * 1px);
+                position: relative;
+                width: 100vw;
+                height: 100vh;
                 overflow: hidden;
-                transform: translate(-50%, -50%) scale(var(--stage-scale));
-                transform-origin: center center;
             }
 
             .background-video {
@@ -44,7 +40,7 @@
                 inset: 0;
                 width: 100%;
                 height: 100%;
-                object-fit: cover;
+                object-fit: fill;
             }
 
             .winners {
@@ -52,18 +48,18 @@
                 top: 40%;
                 left: 50.2%;
                 display: flex;
-                width: 822px;
-                height: 285px;
+                width: 45.87%;
+                height: 13.9%;
                 align-items: center;
                 justify-content: center;
-                gap: 251px;
+                gap: 30.54%;
                 transform: translate(-50%, -50%);
             }
 
             .winner {
                 display: flex;
-                width: 290px;
-                height: 275px;
+                width: 35.28%;
+                height: 96.49%;
                 align-items: center;
                 justify-content: center;
                 opacity: 0;
@@ -103,8 +99,6 @@
             const APPS_SCRIPT_URL =
                 "https://script.google.com/macros/s/AKfycbzXWt2A7win0rxAKO6XDW9BMkRfT2PcvJdqCGdtOoSOPVUtFvfeXuqoEOWFVBeFKS3S/exec";
             const REFRESH_INTERVAL_MS = 30000;
-            const CANVAS_WIDTH = 1792;
-            const CANVAS_HEIGHT = 2050;
 
             const svgByOption = new Map([
                 ["argentina", "Argentina.svg"],
@@ -119,12 +113,6 @@
                 ["noruega", "Noruega.svg"],
                 ["suiza", "Suiza.svg"]
             ]);
-
-            function resizeStage() {
-                const scale = Math.min(window.innerWidth / CANVAS_WIDTH, window.innerHeight / CANVAS_HEIGHT);
-
-                document.documentElement.style.setProperty("--stage-scale", scale);
-            }
 
             function normalizeOption(value) {
                 return String(value || "")
@@ -199,10 +187,8 @@
                 document.body.appendChild(script);
             }
 
-            resizeStage();
             loadResults();
 
-            window.addEventListener("resize", resizeStage);
             window.setInterval(loadResults, REFRESH_INTERVAL_MS);
         </script>
     </body>
